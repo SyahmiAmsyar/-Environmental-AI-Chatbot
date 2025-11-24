@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoGuard Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f9f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            text-align: center;
+            color: #2a7a2a;
+        }
+        #chatbox {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .user {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+        .bot {
+            background-color: #d4edda;
+            color: black;
+            align-self: flex-start;
+        }
+        form {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #2a7a2a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1f5e1f;
+        }
+        .quick-buttons {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .quick-buttons button {
+            background-color: #28a745;
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>EcoGuard – Environmental AI Chatbot</h2>
+
+        <div class="quick-buttons">
+            <button type="button" onclick="sendQuick('What is air pollution?')">Air Pollution</button>
+            <button type="button" onclick="sendQuick('How can we reduce plastic pollution?')">Plastic Pollution</button>
+            <button type="button" onclick="sendQuick('Why is climate change happening?')">Climate Change</button>
+        </div>
+
+        <div id="chatbox"></div>
+
+        <form id="chatForm">
+            <input type="text" id="message" placeholder="Ask about pollution..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        const chatbox = document.getElementById("chatbox");
+        const form = document.getElementById("chatForm");
+        const messageInput = document.getElementById("message");
+
+        async function sendMessage(msg) {
+            // Display user message
+            const userMsg = document.createElement("div");
+            userMsg.className = "message user";
+            userMsg.textContent = msg;
+            chatbox.appendChild(userMsg);
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append("message", msg);
+
+            // Show bot typing indicator
+            const botMsg = document.createElement("div");
+            botMsg.className = "message bot";
+            botMsg.textContent = "Bot is typing...";
+            chatbox.appendChild(botMsg);
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Send request to Flask
+            const res = await fetch("/chat", { method: "POST", body: formData });
+            const reply = await res.text();
+
+            // Update bot message
+            botMsg.textContent = reply;
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        form.onsubmit = function(e){
+            e.preventDefault();
+            const msg = messageInput.value;
+            messageInput.value = "";
+            sendMessage(msg);
+        }
+
+        function sendQuick(msg) {
+            messageInput.value = msg;
+            sendMessage(msg);
+        }
+    </script>
+</body>
+</html>
