@@ -3,95 +3,45 @@
 <head>
     <title>EcoGuard Chatbot</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f9f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-            background-color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        h2 {
-            text-align: center;
-            color: #2a7a2a;
-        }
-        #chatbox {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            height: 400px;
-            overflow-y: scroll;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-        }
-        .message {
-            padding: 8px 12px;
-            border-radius: 10px;
-            margin: 5px 0;
-            display: inline-block;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-        .user {
-            background-color: #007bff;
-            color: white;
-            align-self: flex-end;
-        }
-        .bot {
-            background-color: #d4edda;
-            color: black;
-            align-self: flex-start;
-        }
-        form {
-            display: flex;
-            gap: 10px;
-        }
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #2a7a2a;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #1f5e1f;
-        }
-        .quick-buttons {
-            margin-bottom: 10px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .quick-buttons button {
-            background-color: #28a745;
-            font-size: 14px;
-            padding: 5px 10px;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #e6f2ff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { max-width: 650px; width: 100%; background-color: #fff; border-radius: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); padding: 20px; display: flex; flex-direction: column; }
+        h2 { text-align: center; color: #1a751a; margin-bottom: 15px; }
+        .download-btn { text-align: right; margin-bottom: 10px; }
+        .download-btn button { background-color: #ff7f50; font-size: 14px; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; }
+        .download-btn button:hover { background-color: #e5623b; }
+        .quick-buttons { margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .quick-buttons button { background-color: #28a745; font-size: 14px; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; }
+        .quick-buttons button:hover { background-color: #1e7e34; }
+        #chatbox { border: 1px solid #ccc; border-radius: 10px; padding: 15px; height: 450px; overflow-y: auto; margin-bottom: 15px; background-color: #f0f8f5; display: flex; flex-direction: column; gap: 10px; }
+        .message-container { display: flex; align-items: flex-start; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 12px; max-width: 75%; word-wrap: break-word; position: relative; }
+        .user-message { background-color: #007bff; color: white; margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; }
+        .bot-message { background-color: #d4edda; color: black; margin-right: auto; display: flex; flex-direction: column; align-items: flex-start; }
+        .timestamp { font-size: 10px; margin-top: 4px; opacity: 0.6; }
+        .avatar { width: 35px; height: 35px; border-radius: 50%; background-color: #ccc; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 16px; }
+        form { display: flex; gap: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
+        button.send-btn { padding: 12px 20px; background-color: #1a751a; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
+        button.send-btn:hover { background-color: #145014; }
+        .typing { font-style: italic; opacity: 0.7; }
+
+        /* Section headers */
+        .section { margin-bottom: 8px; padding: 6px 10px; border-radius: 6px; font-weight: bold; color: white; }
+        .definition { background-color: #1abc9c; }
+        .types { background-color: #3498db; }
+        .sources { background-color: #f1c40f; color: black; }
+        .effects { background-color: #e67e22; }
+        .solutions { background-color: #2ecc71; }
+        .section-content { margin-left: 12px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>EcoGuard – Environmental AI Chatbot</h2>
+
+        <div class="download-btn">
+            <button type="button" onclick="downloadHistory()">Download Chat History</button>
+        </div>
 
         <div class="quick-buttons">
             <button type="button" onclick="sendQuick('What is air pollution?')">Air Pollution</button>
@@ -103,7 +53,7 @@
 
         <form id="chatForm">
             <input type="text" id="message" placeholder="Ask about pollution..." required>
-            <button type="submit">Send</button>
+            <button type="submit" class="send-btn">Send</button>
         </form>
     </div>
 
@@ -111,36 +61,94 @@
         const chatbox = document.getElementById("chatbox");
         const form = document.getElementById("chatForm");
         const messageInput = document.getElementById("message");
+        let chatHistory = [];
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+        }
+
+        function formatBotReply(reply) {
+            // Split by section headers
+            let sections = reply.split(/(🌱 1\. Definition:|🔹 2\. Types \/ Components:|⚡ 3\. Sources \/ Causes:|⚠️ 4\. Effects \/ Impact:|💡 5\. Solutions \/ Prevention:)/g);
+
+            let html = "";
+            for (let i = 1; i < sections.length; i += 2) {
+                let header = sections[i].trim();
+                let content = (sections[i+1] || "").trim().replace(/\n/g, "<br>");
+                let className = "";
+                switch(header) {
+                    case "🌱 1. Definition:": className = "definition"; break;
+                    case "🔹 2. Types / Components:": className = "types"; break;
+                    case "⚡ 3. Sources / Causes:": className = "sources"; break;
+                    case "⚠️ 4. Effects / Impact:": className = "effects"; break;
+                    case "💡 5. Solutions / Prevention:": className = "solutions"; break;
+                }
+                html += `<div class="section ${className}">${header}</div>`;
+                html += `<div class="section-content">${content}</div>`;
+            }
+            return html;
+        }
 
         async function sendMessage(msg) {
-            // Display user message
+            // User message
+            const userContainer = document.createElement("div");
+            userContainer.className = "message-container";
+            const userAvatar = document.createElement("div");
+            userAvatar.className = "avatar";
+            userAvatar.textContent = "You";
             const userMsg = document.createElement("div");
-            userMsg.className = "message user";
-            userMsg.textContent = msg;
-            chatbox.appendChild(userMsg);
+            userMsg.className = "message user-message";
+            userMsg.innerHTML = `${msg}<div class="timestamp">${getCurrentTime()}</div>`;
+            userContainer.appendChild(userAvatar);
+            userContainer.appendChild(userMsg);
+            chatbox.appendChild(userContainer);
             chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Prepare form data
-            const formData = new FormData();
-            formData.append("message", msg);
-
-            // Show bot typing indicator
+            // Bot message
+            const botContainer = document.createElement("div");
+            botContainer.className = "message-container";
+            const botAvatar = document.createElement("div");
+            botAvatar.className = "avatar";
+            botAvatar.style.backgroundColor = "#28a745";
+            botAvatar.textContent = "B";
             const botMsg = document.createElement("div");
-            botMsg.className = "message bot";
-            botMsg.textContent = "Bot is typing...";
-            chatbox.appendChild(botMsg);
+            botMsg.className = "message bot-message typing";
+            botMsg.textContent = "Bot is typing";
+            botContainer.appendChild(botAvatar);
+            botContainer.appendChild(botMsg);
+            chatbox.appendChild(botContainer);
             chatbox.scrollTop = chatbox.scrollHeight;
 
-            // Send request to Flask
-            const res = await fetch("/chat", { method: "POST", body: formData });
-            const reply = await res.text();
+            // Typing animation
+            let dotCount = 0;
+            const typingInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                botMsg.textContent = "Bot is typing" + ".".repeat(dotCount);
+            }, 500);
 
-            // Update bot message
-            botMsg.textContent = reply;
+            try {
+                const formData = new FormData();
+                formData.append("message", msg);
+                const res = await fetch("/chat", { method: "POST", body: formData });
+                const reply = await res.text();
+
+                clearInterval(typingInterval);
+                botMsg.classList.remove("typing");
+
+                const formatted = formatBotReply(reply);
+                botMsg.innerHTML = formatted + `<div class="timestamp">${getCurrentTime()}</div>`;
+                chatHistory.push({ user: msg, bot: reply });
+            } catch (err) {
+                clearInterval(typingInterval);
+                botMsg.classList.remove("typing");
+                botMsg.innerHTML = `Error: Unable to reach AI service.<div class="timestamp">${getCurrentTime()}</div>`;
+            }
+
             chatbox.scrollTop = chatbox.scrollHeight;
         }
 
-        form.onsubmit = function(e){
+        form.onsubmit = function(e) {
             e.preventDefault();
             const msg = messageInput.value;
             messageInput.value = "";
@@ -150,6 +158,24 @@
         function sendQuick(msg) {
             messageInput.value = msg;
             sendMessage(msg);
+        }
+
+        function downloadHistory() {
+            if (chatHistory.length === 0) {
+                alert("No chat history to download.");
+                return;
+            }
+            let text = "";
+            chatHistory.forEach(entry => {
+                text += `You: ${entry.user}\nBot: ${entry.bot}\n\n`;
+            });
+            const blob = new Blob([text], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "chat_history.txt";
+            a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
