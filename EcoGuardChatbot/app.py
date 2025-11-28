@@ -32,7 +32,7 @@ Question: {user_message}
 """
 
     payload = {
-        "model": "llama3.2",
+        "model": "deepseek-v3.1:671b-cloud",
         "prompt": prompt
     }
 
