@@ -1,59 +1,367 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EcoGuard Chatbot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoGuard – Environmental AI Assistant</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #e6f2ff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { max-width: 650px; width: 100%; background-color: #fff; border-radius: 15px; box-shadow: 0 6px 20px rgba(0,0,0,0.15); padding: 20px; display: flex; flex-direction: column; }
-        h2 { text-align: center; color: #1a751a; margin-bottom: 15px; }
-        .download-btn { text-align: right; margin-bottom: 10px; }
-        .download-btn button { background-color: #ff7f50; font-size: 14px; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; }
-        .download-btn button:hover { background-color: #e5623b; }
-        .quick-buttons { margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .quick-buttons button { background-color: #28a745; font-size: 14px; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; }
-        .quick-buttons button:hover { background-color: #1e7e34; }
-        #chatbox { border: 1px solid #ccc; border-radius: 10px; padding: 15px; height: 450px; overflow-y: auto; margin-bottom: 15px; background-color: #f0f8f5; display: flex; flex-direction: column; gap: 10px; }
-        .message-container { display: flex; align-items: flex-start; gap: 10px; }
-        .message { padding: 10px 15px; border-radius: 12px; max-width: 75%; word-wrap: break-word; position: relative; }
-        .user-message { background-color: #007bff; color: white; margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; }
-        .bot-message { background-color: #d4edda; color: black; margin-right: auto; display: flex; flex-direction: column; align-items: flex-start; }
-        .timestamp { font-size: 10px; margin-top: 4px; opacity: 0.6; }
-        .avatar { width: 35px; height: 35px; border-radius: 50%; background-color: #ccc; display: flex; justify-content: center; align-items: center; font-weight: bold; color: white; font-size: 16px; }
-        form { display: flex; gap: 10px; }
-        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
-        button.send-btn { padding: 12px 20px; background-color: #1a751a; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; }
-        button.send-btn:hover { background-color: #145014; }
-        .typing { font-style: italic; opacity: 0.7; }
+        /* Custom styles for the EcoGuard design */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e6f2ff; /* Light blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
 
-        /* Section headers */
-        .section { margin-bottom: 8px; padding: 6px 10px; border-radius: 6px; font-weight: bold; color: white; }
-        .definition { background-color: #1abc9c; }
-        .types { background-color: #3498db; }
-        .sources { background-color: #f1c40f; color: black; }
-        .effects { background-color: #e67e22; }
-        .solutions { background-color: #2ecc71; }
-        .section-content { margin-left: 12px; }
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; /* Ensure it fits smaller screens */
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a751a; /* Dark Green */
+            line-height: 1;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1;
+        }
+
+        .quick-buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-button {
+            background-color: #3498db; /* Blue */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .quick-button:hover {
+            background-color: #2980b9;
+        }
+
+        #chatbox {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f0f8f5; /* Light mint background */
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 350px;
+        }
+
+        .message-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .user-container {
+            justify-content: flex-end;
+        }
+        
+        .bot-container {
+            justify-content: flex-start;
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 5px; /* Align with top of message */
+        }
+        
+        .user-avatar { background-color: #007bff; }
+        .bot-avatar { background-color: #28a745; }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 75%;
+            word-wrap: break-word;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            min-width: 100px; /* Ensure space for timestamp */
+        }
+        
+        .user-bubble {
+            background-color: #3498db;
+            color: white;
+            border-top-right-radius: 4px;
+        }
+        
+        .bot-bubble {
+            background-color: #d4edda; /* Very light green */
+            color: #333;
+            border-top-left-radius: 4px;
+        }
+
+        .timestamp {
+            font-size: 10px;
+            margin-top: 4px;
+            opacity: 0.7;
+            text-align: right;
+        }
+        
+        /* Message Formatting for Structured Answers */
+        .section-header {
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        .section-header:first-child {
+            margin-top: 0;
+        }
+
+        .definition { background-color: #1abc9c; } /* Green-Cyan */
+        .types { background-color: #3498db; }     /* Blue */
+        .sources { background-color: #f1c40f; color: #333; } /* Yellow */
+        .effects { background-color: #e67e22; }   /* Orange */
+        .solutions { background-color: #2ecc71; } /* Emerald Green */
+        .prevention { background-color: #9b59b6; } /* Purple */
+        .causes { background-color: #e74c3c; }    /* Red */
+        .actionable { background-color: #34495e; } /* Dark Blue */
+        
+        .section-content {
+            margin-left: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .loading-dots {
+            font-size: 1.5em;
+            line-height: 1;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1.0; }
+            100% { opacity: 0.2; }
+        }
+
+        /* Input and Button Styling */
+        form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        #message {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background-color: #1a751a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .send-btn:hover {
+            background-color: #145014;
+        }
+        
+        /* New Styles for Different Response Types */
+        .tip-item {
+            background: #f0f9ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .step-item {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .causes-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .actionable-item {
+            background: #ecf0f1;
+            border-left: 4px solid #34495e;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .comparison-item {
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s;
+        }
+
+        .comparison-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Smooth transitions for messages */
+        .message-container {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.3s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Better scrollbar */
+        #chatbox::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chatbox::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #chatbox::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        #chatbox::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 640px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+                max-height: 85vh;
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+            }
+            
+            .quick-buttons-container {
+                flex-direction: column;
+            }
+            
+            .quick-button {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>EcoGuard – Environmental AI Chatbot</h2>
-
-        <div class="download-btn">
-            <button type="button" onclick="downloadHistory()">Download Chat History</button>
+        <div class="header">
+            <div class="logo-text">
+                <h1>EcoGuard</h1>
+                <p>Your Environmental AI Assistant</p>
+            </div>
+            <button id="downloadBtn" class="bg-orange-400 text-white px-3 py-1 rounded-lg text-sm transition-colors hover:bg-orange-500">
+                <span class="inline-flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    Download
+                </span>
+            </button>
         </div>
 
-        <div class="quick-buttons">
-            <button type="button" onclick="sendQuick('What is air pollution?')">Air Pollution</button>
-            <button type="button" onclick="sendQuick('How can we reduce plastic pollution?')">Plastic Pollution</button>
-            <button type="button" onclick="sendQuick('Why is climate change happening?')">Climate Change</button>
+        <div class="quick-buttons-container">
+            <button class="quick-button" onclick="sendQuick('What is air pollution?')">What is air pollution?</button>
+            <button class="quick-button" onclick="sendQuick('How can we reduce plastic pollution?')">How to reduce plastic pollution?</button>
+            <button class="quick-button" onclick="sendQuick('Give me tips for recycling.')">Tips for recycling.</button>
+            <button class="quick-button" onclick="sendQuick('Why does climate change happen?')">Why climate change?</button>
+            <button class="quick-button" onclick="sendQuick('How do I start composting?')">Composting guide</button>
+            <button class="quick-button" onclick="sendQuick('How to prevent deforestation?')">Prevent deforestation</button>
         </div>
 
-        <div id="chatbox"></div>
+        <div id="chatbox">
+            <!-- Initial welcome message -->
+            <div class="message-container bot-container">
+                <div class="avatar bot-avatar">E</div>
+                <div class="message-bubble bot-bubble max-w-full">
+                    Hello! I'm EcoGuard, an environmental expert. I can help you with questions about pollution, climate change, conservation, and sustainability. Ask me anything!
+                    <div class="timestamp">09:00</div>
+                </div>
+            </div>
+        </div>
 
         <form id="chatForm">
-            <input type="text" id="message" placeholder="Ask about pollution..." required>
-            <button type="submit" class="send-btn">Send</button>
+            <input type="text" id="message" placeholder="Ask about pollution, climate change, or environmental topics..." required>
+            <button type="submit" class="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.78 59.78 0 0 1 21.485 12 59.78 59.78 0 0 1 3.27 20.875L6 12Z" />
+                </svg>
+            </button>
         </form>
     </div>
 
@@ -61,122 +369,458 @@
         const chatbox = document.getElementById("chatbox");
         const form = document.getElementById("chatForm");
         const messageInput = document.getElementById("message");
+        const downloadBtn = document.getElementById("downloadBtn");
         let chatHistory = [];
 
         function getCurrentTime() {
             const now = new Date();
-            return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         }
 
-        function formatBotReply(reply) {
-            // Split by section headers
-            let sections = reply.split(/(🌱 1\. Definition:|🔹 2\. Types \/ Components:|⚡ 3\. Sources \/ Causes:|⚠️ 4\. Effects \/ Impact:|💡 5\. Solutions \/ Prevention:)/g);
-
-            let html = "";
-            for (let i = 1; i < sections.length; i += 2) {
-                let header = sections[i].trim();
-                let content = (sections[i+1] || "").trim().replace(/\n/g, "<br>");
-                let className = "";
-                switch(header) {
-                    case "🌱 1. Definition:": className = "definition"; break;
-                    case "🔹 2. Types / Components:": className = "types"; break;
-                    case "⚡ 3. Sources / Causes:": className = "sources"; break;
-                    case "⚠️ 4. Effects / Impact:": className = "effects"; break;
-                    case "💡 5. Solutions / Prevention:": className = "solutions"; break;
-                }
-                html += `<div class="section ${className}">${header}</div>`;
-                html += `<div class="section-content">${content}</div>`;
+        function formatBotReply(replyText) {
+            // Clean the text
+            const cleanText = replyText.trim();
+            
+            // Check for prevention format
+            if (cleanText.includes('PREVENTION METHODS:')) {
+                return formatPreventionResponse(cleanText);
             }
+            // Check for actionable format
+            else if (cleanText.includes('ACTIONABLE STEPS:')) {
+                return formatActionableResponse(cleanText);
+            }
+            // Check for causes format
+            else if (cleanText.includes('PRIMARY CAUSES:') && cleanText.includes('ENVIRONMENTAL MECHANISM:')) {
+                return formatCausesResponse(cleanText);
+            }
+            // Check for effects format
+            else if (cleanText.includes('IMMEDIATE EFFECTS:') && cleanText.includes('LONG-TERM IMPACTS:')) {
+                return formatEffectsResponse(cleanText);
+            }
+            // Check for educational format (new headers)
+            else if (cleanText.includes('🌱 CORE CONCEPT:') && cleanText.includes('💡 SUSTAINABLE SOLUTIONS:')) {
+                return formatEducationalResponse(cleanText);
+            }
+            // Check for tips format
+            else if (cleanText.includes('PRACTICAL TIPS:') || /^\d+\./.test(cleanText)) {
+                return formatTipsResponse(cleanText);
+            }
+            // Check for step-by-step format
+            else if (cleanText.includes('STEP-BY-STEP GUIDE:') || /Step\s\d+:/.test(cleanText)) {
+                return formatStepByStepResponse(cleanText);
+            }
+            // Default - simple text
+            else {
+                return formatSimpleResponse(cleanText);
+            }
+        }
+
+        function formatEducationalResponse(text) {
+            let html = '';
+            const sections = [
+                { header: '🌱 CORE CONCEPT:', class: 'definition' },
+                { header: '🔹 KEY COMPONENTS:', class: 'types' },
+                { header: '⚡ PRIMARY SOURCES:', class: 'sources' },
+                { header: '⚠️ ENVIRONMENTAL IMPACTS:', class: 'effects' },
+                { header: '💡 SUSTAINABLE SOLUTIONS:', class: 'solutions' }
+            ];
+
+            sections.forEach(section => {
+                const headerIndex = text.indexOf(section.header);
+                if (headerIndex !== -1) {
+                    // Find the content between this header and the next header
+                    let contentStart = headerIndex + section.header.length;
+                    let contentEnd = text.length;
+                    
+                    // Look for the next section header
+                    for (let i = sections.indexOf(section) + 1; i < sections.length; i++) {
+                        const nextHeaderIndex = text.indexOf(sections[i].header);
+                        if (nextHeaderIndex !== -1 && nextHeaderIndex > headerIndex) {
+                            contentEnd = nextHeaderIndex;
+                            break;
+                        }
+                    }
+                    
+                    let content = text.slice(contentStart, contentEnd).trim();
+                    
+                    html += `<div class="section-header ${section.class}">${section.header}</div>`;
+                    html += `<div class="section-content">${formatBulletPoints(content)}</div>`;
+                }
+            });
+
+            return html || formatSimpleResponse(text);
+        }
+
+        function formatTipsResponse(text) {
+            let html = '<div class="section-header bg-green-500">PRACTICAL TIPS</div>';
+            const lines = text.split('\n');
+            let tipCount = 0;
+            
+            lines.forEach(line => {
+                line = line.trim();
+                // Match lines starting with numbers (1., 2., etc.)
+                const tipMatch = line.match(/^(\d+)\.\s*(.+)$/);
+                if (tipMatch) {
+                    tipCount++;
+                    const tipNumber = tipMatch[1];
+                    const tipText = tipMatch[2];
+                    html += `
+                        <div class="tip-item flex items-start mb-3 p-3 bg-green-50 rounded-lg">
+                            <span class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 flex-shrink-0">${tipNumber}</span>
+                            <span class="flex-1">${tipText}</span>
+                        </div>
+                    `;
+                }
+            });
+
             return html;
         }
 
+        function formatPreventionResponse(text) {
+            let html = '<div class="section-header bg-purple-500">PREVENTION METHODS</div>';
+            const lines = text.split('\n');
+            
+            lines.forEach(line => {
+                line = line.trim();
+                const tipMatch = line.match(/^(\d+)\.\s*(.+)$/);
+                if (tipMatch) {
+                    const tipNumber = tipMatch[1];
+                    const tipText = tipMatch[2];
+                    html += `
+                        <div class="tip-item flex items-start mb-3 p-3 bg-purple-50 rounded-lg">
+                            <span class="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 flex-shrink-0">${tipNumber}</span>
+                            <span class="flex-1">${tipText}</span>
+                        </div>
+                    `;
+                }
+            });
+
+            // Add effectiveness section if present
+            if (text.includes('EFFECTIVENESS:')) {
+                const effectivenessIndex = text.indexOf('EFFECTIVENESS:');
+                const effectivenessContent = text.slice(effectivenessIndex + 'EFFECTIVENESS:'.length).trim();
+                html += `<div class="section-header bg-blue-500 mt-4">EFFECTIVENESS</div>`;
+                html += `<div class="section-content p-3 bg-blue-50 rounded-lg mt-2">${effectivenessContent}</div>`;
+            }
+            
+            return html;
+        }
+
+        function formatActionableResponse(text) {
+            let html = '<div class="section-header bg-gray-700">ACTIONABLE STEPS</div>';
+            const lines = text.split('\n');
+            let inSteps = false;
+            
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.includes('ACTIONABLE STEPS:')) {
+                    inSteps = true;
+                    return;
+                }
+                if (line.includes('RESOURCES NEEDED:')) {
+                    inSteps = false;
+                    html += `<div class="section-header bg-orange-500 mt-4">RESOURCES NEEDED</div>`;
+                    return;
+                }
+                if (line.includes('ENVIRONMENTAL BENEFIT:')) {
+                    inSteps = false;
+                    const benefitContent = text.slice(text.indexOf('ENVIRONMENTAL BENEFIT:') + 'ENVIRONMENTAL BENEFIT:'.length).trim();
+                    html += `<div class="section-header bg-green-500 mt-4">ENVIRONMENTAL BENEFIT</div>`;
+                    html += `<div class="section-content p-3 bg-green-50 rounded-lg mt-2">${benefitContent}</div>`;
+                    return;
+                }
+                
+                if (inSteps && line.includes('✅')) {
+                    const stepText = line.replace('✅', '').trim();
+                    html += `
+                        <div class="actionable-item flex items-start mb-3">
+                            <span class="text-green-500 mr-3 mt-1">✅</span>
+                            <span class="flex-1">${stepText}</span>
+                        </div>
+                    `;
+                } else if (line.includes('•') && !inSteps) {
+                    // Resources section
+                    const resourceText = line.replace('•', '').trim();
+                    html += `<div class="flex items-start mb-2 ml-4">
+                        <span class="text-orange-500 mr-2 mt-1">•</span>
+                        <span>${resourceText}</span>
+                    </div>`;
+                }
+            });
+            
+            return html;
+        }
+
+        function formatCausesResponse(text) {
+            let html = '';
+            const sections = text.split(/(PRIMARY CAUSES:|IMMEDIATE TRIGGERS:|ENVIRONMENTAL MECHANISM:)/);
+            
+            for (let i = 1; i < sections.length; i += 2) {
+                const header = sections[i].trim();
+                let content = sections[i + 1]?.trim() || '';
+                
+                let headerClass = "";
+                if (header === "PRIMARY CAUSES:") headerClass = "causes";
+                else if (header === "IMMEDIATE TRIGGERS:") headerClass = "sources";
+                else if (header === "ENVIRONMENTAL MECHANISM:") headerClass = "effects";
+                
+                if (header === "ENVIRONMENTAL MECHANISM:") {
+                    html += `<div class="section-header ${headerClass}">${header}</div>`;
+                    html += `<div class="section-content p-3 bg-red-50 rounded-lg mt-2">${content}</div>`;
+                } else {
+                    html += `<div class="section-header ${headerClass}">${header}</div>`;
+                    html += `<div class="section-content pl-4 mt-2">${formatBulletPoints(content)}</div>`;
+                }
+            }
+            
+            return html;
+        }
+
+        function formatEffectsResponse(text) {
+            let html = '';
+            const sections = text.split(/(IMMEDIATE EFFECTS:|LONG-TERM IMPACTS:|ECOSYSTEM CONSEQUENCES:)/);
+            
+            for (let i = 1; i < sections.length; i += 2) {
+                const header = sections[i].trim();
+                let content = sections[i + 1]?.trim() || '';
+                
+                let headerClass = "";
+                if (header === "IMMEDIATE EFFECTS:") headerClass = "effects";
+                else if (header === "LONG-TERM IMPACTS:") headerClass = "sources";
+                else if (header === "ECOSYSTEM CONSEQUENCES:") headerClass = "definition";
+                
+                if (header === "ECOSYSTEM CONSEQUENCES:") {
+                    html += `<div class="section-header ${headerClass}">${header}</div>`;
+                    html += `<div class="section-content p-3 bg-orange-50 rounded-lg mt-2">${content}</div>`;
+                } else {
+                    html += `<div class="section-header ${headerClass}">${header}</div>`;
+                    html += `<div class="section-content pl-4 mt-2">${formatBulletPoints(content)}</div>`;
+                }
+            }
+            
+            return html;
+        }
+
+        function formatStepByStepResponse(text) {
+            let html = '<div class="section-header bg-blue-500">STEP-BY-STEP GUIDE</div>';
+            const lines = text.split('\n');
+            let inGuideSection = false;
+            
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.includes('STEP-BY-STEP GUIDE:')) {
+                    inGuideSection = true;
+                    return;
+                }
+                
+                if (inGuideSection && line.match(/Step\s\d+:/i)) {
+                    const stepNumber = line.match(/\d+/)[0];
+                    const stepText = line.replace(/Step\s\d+:\s*/i, '');
+                    html += `
+                        <div class="step-item bg-blue-50 border-l-4 border-blue-500 pl-4 py-3 mb-3">
+                            <strong class="text-blue-700 block mb-1">Step ${stepNumber}:</strong>
+                            <span>${stepText}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            return html;
+        }
+
+        function formatSimpleResponse(text) {
+            // For unstructured responses, just add line breaks
+            return text.replace(/\n/g, '<br>');
+        }
+
+        function formatBulletPoints(text) {
+            if (!text) return "No information provided";
+            
+            // Split by bullet points or lines and filter empty lines
+            const points = text.split(/•|\n/)
+                .map(point => point.trim())
+                .filter(point => point && point !== '•');
+            
+            if (points.length === 0) return "No information provided";
+            
+            return points.map(point => 
+                `<div class="flex items-start mb-2">
+                    <span class="text-green-500 mr-2 mt-1">•</span>
+                    <span>${point}</span>
+                </div>`
+            ).join('');
+        }
+
+        function createMessageElement(role, text, isTyping = false) {
+            const container = document.createElement("div");
+            container.className = `message-container ${role}-container`;
+            
+            const avatar = document.createElement("div");
+            avatar.className = `avatar ${role}-avatar`;
+            avatar.textContent = role === 'user' ? "You" : "E";
+
+            const bubble = document.createElement("div");
+            bubble.className = `message-bubble ${role}-bubble`;
+            
+            if (isTyping) {
+                bubble.innerHTML = '<span class="loading-dots">...</span>';
+            } else {
+                bubble.innerHTML = formatBotReply(text) + `<div class="timestamp">${getCurrentTime()}</div>`;
+            }
+
+            // Order avatar and bubble correctly (user is right, bot is left)
+            if (role === 'user') {
+                container.appendChild(bubble);
+                container.appendChild(avatar);
+            } else {
+                container.appendChild(avatar);
+                container.appendChild(bubble);
+            }
+            
+            chatbox.appendChild(container);
+            chatbox.scrollTop = chatbox.scrollHeight;
+            return { container, bubble };
+        }
+
         async function sendMessage(msg) {
-            // User message
-            const userContainer = document.createElement("div");
-            userContainer.className = "message-container";
-            const userAvatar = document.createElement("div");
-            userAvatar.className = "avatar";
-            userAvatar.textContent = "You";
-            const userMsg = document.createElement("div");
-            userMsg.className = "message user-message";
-            userMsg.innerHTML = `${msg}<div class="timestamp">${getCurrentTime()}</div>`;
-            userContainer.appendChild(userAvatar);
-            userContainer.appendChild(userMsg);
-            chatbox.appendChild(userContainer);
-            chatbox.scrollTop = chatbox.scrollHeight;
+            // 1. Display User Message
+            createMessageElement('user', msg);
+            chatHistory.push({ role: 'user', content: msg, time: getCurrentTime() });
 
-            // Bot message
-            const botContainer = document.createElement("div");
-            botContainer.className = "message-container";
-            const botAvatar = document.createElement("div");
-            botAvatar.className = "avatar";
-            botAvatar.style.backgroundColor = "#28a745";
-            botAvatar.textContent = "B";
-            const botMsg = document.createElement("div");
-            botMsg.className = "message bot-message typing";
-            botMsg.textContent = "Bot is typing";
-            botContainer.appendChild(botAvatar);
-            botContainer.appendChild(botMsg);
-            chatbox.appendChild(botContainer);
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            // Typing animation
-            let dotCount = 0;
-            const typingInterval = setInterval(() => {
-                dotCount = (dotCount + 1) % 4;
-                botMsg.textContent = "Bot is typing" + ".".repeat(dotCount);
-            }, 500);
+            // 2. Display Typing Indicator
+            const { bubble: botBubble } = createMessageElement('bot', '', true);
 
             try {
-                const formData = new FormData();
-                formData.append("message", msg);
-                const res = await fetch("/chat", { method: "POST", body: formData });
-                const reply = await res.text();
+                // 3. Call Flask Backend
+                const response = await fetch("/generate_content", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
 
-                clearInterval(typingInterval);
-                botMsg.classList.remove("typing");
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
 
-                const formatted = formatBotReply(reply);
-                botMsg.innerHTML = formatted + `<div class="timestamp">${getCurrentTime()}</div>`;
-                chatHistory.push({ user: msg, bot: reply });
+                const data = await response.json();
+                const botReply = data.text;
+
+                // 4. Update Bot Message
+                botBubble.innerHTML = formatBotReply(botReply) + `<div class="timestamp">${getCurrentTime()}</div>`;
+                chatHistory.push({ role: 'bot', content: botReply, time: getCurrentTime() });
+
             } catch (err) {
-                clearInterval(typingInterval);
-                botMsg.classList.remove("typing");
-                botMsg.innerHTML = `Error: Unable to reach AI service.<div class="timestamp">${getCurrentTime()}</div>`;
+                // 5. Handle Error
+                console.error("Chat Error:", err);
+                const errorMsg = `Error: Unable to reach AI service. Please try again.`;
+                botBubble.innerHTML = errorMsg + `<div class="timestamp">${getCurrentTime()}</div>`;
+                chatHistory.push({ role: 'bot', content: errorMsg, time: getCurrentTime() });
             }
 
             chatbox.scrollTop = chatbox.scrollHeight;
+            saveChatHistory();
         }
 
         form.onsubmit = function(e) {
             e.preventDefault();
-            const msg = messageInput.value;
-            messageInput.value = "";
-            sendMessage(msg);
+            const msg = messageInput.value.trim();
+            if (msg) {
+                messageInput.value = "";
+                sendMessage(msg);
+            }
         }
 
         function sendQuick(msg) {
-            messageInput.value = msg;
             sendMessage(msg);
         }
 
-        function downloadHistory() {
-            if (chatHistory.length === 0) {
-                alert("No chat history to download.");
+        // Download chat history logic
+        downloadBtn.onclick = function() {
+            if (chatHistory.length <= 1) {
+                showNotification('No conversation to download yet!', 'error');
                 return;
             }
-            let text = "";
-            chatHistory.forEach(entry => {
-                text += `You: ${entry.user}\nBot: ${entry.bot}\n\n`;
+            
+            const date = new Date().toISOString().split('T')[0];
+            let text = `=== EcoGuard Chat History ===\n`;
+            text += `Date: ${date}\n`;
+            text += `Total Messages: ${chatHistory.length}\n\n`;
+            
+            chatHistory.forEach((entry, index) => {
+                if(entry.role === 'user') {
+                    text += `[${entry.time}] YOU:\n${entry.content}\n\n`;
+                } else if (entry.role === 'bot') {
+                    text += `[${entry.time}] ECOGUARD:\n${entry.content}\n`;
+                    text += "\n" + "=".repeat(50) + "\n\n";
+                }
             });
-            const blob = new Blob([text], { type: "text/plain" });
+            
+            const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = "chat_history.txt";
+            a.download = `EcoGuard_Chat_${date}.txt`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
+            
+            showNotification('Chat history downloaded!', 'success');
         }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-5 right-5 p-3 rounded-lg shadow-xl transition-all duration-300 transform translate-y-0 ${
+                type === 'error' ? 'bg-red-500 text-white' : 
+                type === 'success' ? 'bg-green-500 text-white' : 
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            notification.style.zIndex = '1000';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateY(100px)';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Save chat history to localStorage
+        function saveChatHistory() {
+            localStorage.setItem('ecoguardChatHistory', JSON.stringify(chatHistory));
+        }
+
+        // Initialize chat history with the welcome message
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialMsg = "Hello! I'm EcoGuard, an environmental expert. I can help you with questions about pollution, climate change, conservation, and sustainability. Ask me anything!";
+            
+            // Load from localStorage if available
+            const savedHistory = localStorage.getItem('ecoguardChatHistory');
+            if (savedHistory) {
+                try {
+                    chatHistory = JSON.parse(savedHistory);
+                    
+                    // Clear current chatbox
+                    chatbox.innerHTML = '';
+                    
+                    // Re-render history
+                    chatHistory.forEach(entry => {
+                        createMessageElement(entry.role, entry.content, false);
+                    });
+                } catch (e) {
+                    console.error('Error loading chat history:', e);
+                    // If loading fails, start with welcome message
+                    chatHistory = [{ role: 'bot', content: initialMsg, time: '09:00' }];
+                    createMessageElement('bot', initialMsg, false);
+                }
+            } else {
+                // Start with welcome message
+                chatHistory = [{ role: 'bot', content: initialMsg, time: '09:00' }];
+            }
+        });
+
     </script>
 </body>
 </html>
