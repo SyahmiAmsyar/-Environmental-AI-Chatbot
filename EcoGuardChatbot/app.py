@@ -19,7 +19,7 @@ def call_ollama_api(prompt):
     Calls the local Ollama API and returns the response text.
     """
     payload = {
-        "model": "llama3.2",
+        "model": "deepseek-v3.1:671b-cloud",
         "prompt": prompt,
         "stream": True
     }
